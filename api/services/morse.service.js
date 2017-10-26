@@ -1,4 +1,9 @@
 import _ from 'lodash';
+import {
+    MalformedMorseStringError,
+    MalformedBitsStringError,
+    MalformedAlphaNumericStringError
+} from '../errors/client-errors'
 
 const MorseService = {
     /**
@@ -50,7 +55,7 @@ const MorseService = {
                 }
             }
             else {
-                throw 'Malformed morse string';
+                throw new MalformedMorseStringError('Character not in morse', {'Character': morse.charAt(i)});
             }
         }
         return response;
@@ -65,11 +70,12 @@ const MorseService = {
         //first and last ocurrence of 1
         let start = bits.indexOf('1'), end = bits.lastIndexOf('1') + 1;
 
-        if (start === -1) throw 'Malformed bits string';
+        if (start === -1) throw new MalformedBitsStringError('Bit 1 not found in string');
 
-        //search min and max ocurrence of 0 and 1
-        let minZero = Number.MAX_VALUE, maxZero = 0, minOne = Number.MAX_VALUE, maxOne = 0, count, j;
-
+        //search ocurrences of zeros and ones
+        let count, j;
+        let setOnes = new Set();
+        let setZeros = new Set();
         for (let i = start; i < end;) {
             //search min and max ocurrence of 1
             if (bits.charAt(i) === '1') {
@@ -79,8 +85,7 @@ const MorseService = {
                     count++;
                     j++;
                 }
-                if (count < minOne) minOne = count;
-                if (count > maxOne) maxOne = count;
+                setOnes.add(count);
             }
             //search min and max ocurrence of 0
             else if (bits.charAt(i) === '0') {
@@ -90,15 +95,33 @@ const MorseService = {
                     count++;
                     j++;
                 }
-                //TODO: pensar como guardar tambien el medium zero
-                if (count < minZero) minZero = count;
-                if (count > maxZero) maxZero = count;
+                setZeros.add(count);
             }
             else {
-                throw 'Malformed bits string';
+                throw new MalformedBitsStringError('Character not a bit', {'Character': bits.charAt(i)});
             }
             i = j;
         }
+        //verify sets
+        if (setOnes.size > 2) throw new MalformedBitsStringError('More than two ones in a row in the string (e.g 10110111)');
+        //para los zeros el maximo es 3
+        if (setZeros.size > 3) throw new MalformedBitsStringError('More than three zeros in a row in the string (e.g 10110010001000010)');
+
+        //order setOnes and Zeros
+        const ones = _.sortBy([...setOnes]);
+        const zeros = _.sortBy([...setZeros]);
+
+        //ones map with for the dots(.) and the dash(-)
+        let mapOnes = new Map();
+        mapOnes.set(ones[0], '.');
+        if (ones[1]) mapOnes.set(ones[1], '-');
+
+        //zeros maps for spaces
+        let mapZeros = new Map();
+        if (zeros[0]) mapZeros.set(zeros[0], '');
+        if (zeros[1]) mapZeros.set(zeros[1], ' ');
+        if (zeros[2]) mapZeros.set(zeros[2], '  ');
+
         //loop bits to find dot, dash, pause or long pause
         let response = '';
         for (let i = start; i < end;) {
@@ -110,8 +133,7 @@ const MorseService = {
                     count++;
                     j++;
                 }
-                if (count === minOne) response = response.concat(".");
-                else if (count === maxOne) response = response.concat("-");
+                response = response.concat(mapOnes.get(count));
             }
             //search zero
             else {
@@ -121,11 +143,7 @@ const MorseService = {
                     count++;
                     j++;
                 }
-                //TODO: bug cuando el morse es de una sola palabra, pone la separacion doble
-                if (count === minZero) {
-                }
-                else if (count === maxZero) response = response.concat("  ");//letter separator
-                else response = response.concat(" ");//words separator
+                response = response.concat(mapZeros.get(count));
             }
             i = j;
         }
@@ -157,9 +175,9 @@ const MorseService = {
                 }
                 human = morseMap.get(letter);
                 if (!_.isUndefined(human)) response = response.concat(human);
-                else throw 'Malformed morse string';
+                else throw new MalformedMorseStringError('Morse letter not valid', {'letter': letter});
             } else {
-                throw 'Malformed morse string';
+                throw new MalformedMorseStringError('Character not in morse', {'Character': morse.charAt(i)});
             }
             i = j;
         }
@@ -183,7 +201,7 @@ const MorseService = {
             } else {
                 morse = alphaMap.get(human.charAt(i));
                 if (!_.isUndefined(morse)) response = response.concat(morse);
-                else throw 'Malformed human string';
+                else throw new MalformedAlphaNumericStringError('AlphaNumeric not valid', {'letter': human.charAt(i)});
                 i++;
             }
             if (i < length)
