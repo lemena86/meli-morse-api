@@ -26,6 +26,7 @@ const MorseController = {
         //verify param body
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
+            log.error(JSON.stringify(errors.mapped()));
             return res.status(422).json({errors: errors.mapped()});
         }
         //verify and translate
@@ -34,6 +35,7 @@ const MorseController = {
             const morse = MorseService.encode2Morse(human);
             res.status(200).json({code: 200, response: morse});
         } catch (err) {
+            log.error(JSON.stringify(err));
             res.status(400).json(err);
         }
     },
@@ -42,6 +44,7 @@ const MorseController = {
         //verify param body
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
+            log.error(JSON.stringify(errors.mapped()));
             return res.status(422).json({errors: errors.mapped()});
         }
         //verify and translate
@@ -55,6 +58,7 @@ const MorseController = {
             const bits = MorseService.encodeMorse2Bits(morse, minOnes, maxOnes, minZeros, mediumZeros, maxZeros);
             res.status(200).json({code: 200, response: bits});
         } catch (err) {
+            log.error(JSON.stringify(err));
             res.status(400).json(err);
         }
     },
@@ -63,6 +67,7 @@ const MorseController = {
         //verify param body
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
+            log.error(JSON.stringify(errors.mapped()));
             return res.status(422).json({errors: errors.mapped()});
         }
         //verify and translate
@@ -71,6 +76,7 @@ const MorseController = {
             const morse = MorseService.decodeBits2Morse(bits);
             res.status(200).json({code: 200, response: morse});
         } catch (err) {
+            log.error(JSON.stringify(err));
             res.status(400).json(err);
         }
     }

@@ -19,7 +19,7 @@ const MorseService = {
      * @return {string} string with the text in bits
      */
     encodeMorse2Bits: (morse, minOnes = 1, maxOnes = 2, minZeros = 1, mediumZeros = 1, maxZeros = 2) => {
-        let concat = (count, character) => {
+        let _concat = (count, character) => {
             let response = '';
             for (let i = 0; i < count; i++) {
                 response = response.concat(character);
@@ -31,27 +31,27 @@ const MorseService = {
         for (let i = 0; i < length; i++) {
             if (morse.charAt(i) === '.') {
                 //placing the 1
-                response = response.concat(concat(minOnes, '1'));
+                response = response.concat(_concat(minOnes, '1'));
 
                 //placing space to separate characters
-                response = response.concat(concat(minZeros, '0'));
+                response = response.concat(_concat(minZeros, '0'));
             }
             else if (morse.charAt(i) === '-') {
                 //placing the 1
-                response = response.concat(concat(maxOnes, '1'));
+                response = response.concat(_concat(maxOnes, '1'));
 
                 //placing space to separate characters
-                response = response.concat(concat(minZeros, '0'));
+                response = response.concat(_concat(minZeros, '0'));
             }
             else if (morse.charAt(i) === ' ') {
                 //find the number of spaces to know if they are 1 or 2 spaces
                 if (morse.charAt(i + 1) === ' ') {
                     //is separation of words
                     i++;
-                    response = response.concat(concat(maxZeros, '0'));
+                    response = response.concat(_concat(maxZeros, '0'));
                 } else {
                     //letter separation
-                    response = response.concat(concat(mediumZeros, '0'));
+                    response = response.concat(_concat(mediumZeros, '0'));
                 }
             }
             else {
@@ -72,33 +72,34 @@ const MorseService = {
     decodeBits2Morse: (bits) => {
         //first and last ocurrence of 1
         let start = bits.indexOf('1'), end = bits.lastIndexOf('1') + 1;
-
         if (start === -1) throw new MalformedBitsStringError('Bit 1 not found in string', {'msg': 'Bit 1 not found in string'});
 
+        //find count of consecutive characters
+        let _getCount = (character, start, end) => {
+            let j = start, count = 0;
+            while (j < end && bits.charAt(j) === character) {
+                count++;
+                j++;
+            }
+            return {'count': count, 'j': j};
+        }
+
         //search ocurrences of zeros and ones
-        let count, j;
+        let getCountResult;
         let setOnes = new Set();
         let setZeros = new Set();
         for (let i = start; i < end;) {
-            //search min and max ocurrence of 1
+            //search ocurrence of 1
             if (bits.charAt(i) === '1') {
-                j = i;
-                count = 0;
-                while (j < end && bits.charAt(j) === '1') {
-                    count++;
-                    j++;
-                }
-                setOnes.add(count);
+                getCountResult = _getCount(bits.charAt(i), i, end);
+                setOnes.add(getCountResult['count']);
+                i = getCountResult['j'];
             }
-            //search min and max ocurrence of 0
+            //search ocurrence of 0
             else if (bits.charAt(i) === '0') {
-                j = i;
-                count = 0;
-                while (j < end && bits.charAt(j) === '0') {
-                    count++;
-                    j++;
-                }
-                setZeros.add(count);
+                getCountResult = _getCount(bits.charAt(i), i, end);
+                setZeros.add(getCountResult['count']);
+                i = getCountResult['j'];
             }
             else {
                 throw new MalformedBitsStringError('Character not a bit', {
@@ -106,7 +107,6 @@ const MorseService = {
                     'character': bits.charAt(i)
                 });
             }
-            i = j;
         }
         //verify sets
         if (setOnes.size > 2) throw new MalformedBitsStringError(
@@ -127,7 +127,7 @@ const MorseService = {
         mapOnes.set(ones[0], '.');
         if (ones[1]) mapOnes.set(ones[1], '-');
 
-        //zeros maps for spaces
+        //zeros map for spaces
         let mapZeros = new Map();
         if (zeros[0]) mapZeros.set(zeros[0], '');
         if (zeros[1]) mapZeros.set(zeros[1], ' ');
@@ -138,25 +138,16 @@ const MorseService = {
         for (let i = start; i < end;) {
             //search one
             if (bits.charAt(i) === '1') {
-                j = i;
-                count = 0;
-                while (j < end && bits.charAt(j) === '1') {
-                    count++;
-                    j++;
-                }
-                response = response.concat(mapOnes.get(count));
+                getCountResult = _getCount(bits.charAt(i), i, end);
+                i = getCountResult['j'];
+                response = response.concat(mapOnes.get(getCountResult['count']));
             }
             //search zero
             else {
-                j = i;
-                count = 0;
-                while (j < end && bits.charAt(j) === '0') {
-                    count++;
-                    j++;
-                }
-                response = response.concat(mapZeros.get(count));
+                getCountResult = _getCount(bits.charAt(i), i, end);
+                i = getCountResult['j'];
+                response = response.concat(mapZeros.get(getCountResult['count']));
             }
-            i = j;
         }
         return response;
     },

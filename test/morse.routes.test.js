@@ -20,12 +20,20 @@ describe('Translate morse to text', function () {
             .expect(200)
             .expect('Content-Type', /json/, done);
     });
-    it('Returns 200 status and valid value', function (done) {
+    it('Returns 200 status and valid value with two words', function (done) {
         request(app)
             .post('/translate/2text')
             .send({text: '.... --- .-.. .-  -- . .-.. ..'})
             .expect(200)
             .expect('Content-Type', /json/)
             .expect('{"code":200,"response":"HOLA MELI"}', done);
+    });
+    it('Returns 200 status and valid value with one word', function (done) {
+        request(app)
+            .post('/translate/2text')
+            .send({text: '.... --- .-.. .-'})
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .expect('{"code":200,"response":"HOLA"}', done);
     });
 });
