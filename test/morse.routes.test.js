@@ -2,10 +2,10 @@ import request from 'supertest'
 import app from '../api/app'
 
 describe('Translate morse to text', function () {
-    it('Returns 400 status code if param "text" is missing', function (done) {
+    it('Returns 422 status code if param "text" is missing', function (done) {
         request(app)
             .post('/translate/2text')
-            .expect(400, done);
+            .expect(422, done);
     });
     it('Returns 400 status code if param "text" have a character different from . or -', function (done) {
         request(app)

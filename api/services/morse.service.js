@@ -55,7 +55,10 @@ const MorseService = {
                 }
             }
             else {
-                throw new MalformedMorseStringError('Character not in morse', {'Character': morse.charAt(i)});
+                throw new MalformedMorseStringError('Character not in morse', {
+                    'msg': 'Character not in morse',
+                    'character': morse.charAt(i)
+                });
             }
         }
         return response;
@@ -70,7 +73,7 @@ const MorseService = {
         //first and last ocurrence of 1
         let start = bits.indexOf('1'), end = bits.lastIndexOf('1') + 1;
 
-        if (start === -1) throw new MalformedBitsStringError('Bit 1 not found in string');
+        if (start === -1) throw new MalformedBitsStringError('Bit 1 not found in string', {'msg': 'Bit 1 not found in string'});
 
         //search ocurrences of zeros and ones
         let count, j;
@@ -98,14 +101,22 @@ const MorseService = {
                 setZeros.add(count);
             }
             else {
-                throw new MalformedBitsStringError('Character not a bit', {'Character': bits.charAt(i)});
+                throw new MalformedBitsStringError('Character not a bit', {
+                    'msg': 'Character not a bit',
+                    'character': bits.charAt(i)
+                });
             }
             i = j;
         }
         //verify sets
-        if (setOnes.size > 2) throw new MalformedBitsStringError('More than two ones in a row in the string (e.g 10110111)');
+        if (setOnes.size > 2) throw new MalformedBitsStringError(
+            'More than two ones in a row in the string (e.g 10110111)',
+            {'msg': 'More than two ones in a row in the string (e.g 10110111)'}
+        );
         //para los zeros el maximo es 3
-        if (setZeros.size > 3) throw new MalformedBitsStringError('More than three zeros in a row in the string (e.g 10110010001000010)');
+        if (setZeros.size > 3) throw new MalformedBitsStringError(
+            'More than three zeros in a row in the string (e.g 10110010001000010)',
+            {'msg': 'More than three zeros in a row in the string (e.g 10110010001000010)'});
 
         //order setOnes and Zeros
         const ones = _.sortBy([...setOnes]);
@@ -175,9 +186,13 @@ const MorseService = {
                 }
                 human = morseMap.get(letter);
                 if (!_.isUndefined(human)) response = response.concat(human);
-                else throw new MalformedMorseStringError('Morse letter not valid', {'letter': letter});
+                else throw new MalformedMorseStringError(
+                    'Morse letter not valid',
+                    {'msg': 'Morse letter not valid', 'letter': letter});
             } else {
-                throw new MalformedMorseStringError('Character not in morse', {'Character': morse.charAt(i)});
+                throw new MalformedMorseStringError(
+                    'Character not in morse',
+                    {'msg': 'Character not in morse', 'character': morse.charAt(i)});
             }
             i = j;
         }
@@ -201,7 +216,9 @@ const MorseService = {
             } else {
                 morse = alphaMap.get(human.charAt(i));
                 if (!_.isUndefined(morse)) response = response.concat(morse);
-                else throw new MalformedAlphaNumericStringError('AlphaNumeric not valid', {'letter': human.charAt(i)});
+                else throw new MalformedAlphaNumericStringError(
+                    'AlphaNumeric not valid',
+                    {'msg': 'AlphaNumeric not valid', 'character': human.charAt(i)});
                 i++;
             }
             if (i < length)

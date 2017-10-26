@@ -1,48 +1,48 @@
 import {validationResult} from 'express-validator/check';
 import MorseService from '../services/morse.service'
+import {log} from '../logger'
 
 const MorseController = {
 
     translate2Human: (req, res) => {
         //verify param body
-        try {
-            validationResult(req).throw();
-        } catch (err) {
-            res.status(400).json({code: 400, error: err.mapped()});
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            log.error(JSON.stringify(errors.mapped()));
+            return res.status(422).json({errors: errors.mapped()});
         }
         //verify and translate
         try {
             const morse = req.body.text;
             const human = MorseService.translate2Human(morse);
-            res.send({code: 200, response: human});
+            res.status(200).json({code: 200, response: human});
         } catch (err) {
-            res.status(400).json({code: 400, error: err});
+            log.error(JSON.stringify(err));
+            res.status(400).json(err);
         }
     },
 
     encode2Morse: (req, res) => {
         //verify param body
-        try {
-            validationResult(req).throw();
-        } catch (err) {
-            res.status(400).json({code: 400, error: err.mapped()});
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({errors: errors.mapped()});
         }
         //verify and translate
         try {
             const human = req.body.text;
             const morse = MorseService.encode2Morse(human);
-            res.send({code: 200, response: morse});
+            res.status(200).json({code: 200, response: morse});
         } catch (err) {
-            res.status(400).json({code: 400, error: err});
+            res.status(400).json(err);
         }
     },
 
     encodeMorse2Bits: (req, res) => {
         //verify param body
-        try {
-            validationResult(req).throw();
-        } catch (err) {
-            res.status(400).json({code: 400, error: err.mapped()});
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({errors: errors.mapped()});
         }
         //verify and translate
         try {
@@ -53,27 +53,27 @@ const MorseController = {
             const mediumZeros = req.body.mediumZeros || 1;
             const maxZeros = req.body.maxZeros || 2;
             const bits = MorseService.encodeMorse2Bits(morse, minOnes, maxOnes, minZeros, mediumZeros, maxZeros);
-            res.send({code: 200, response: bits});
+            res.status(200).json({code: 200, response: bits});
         } catch (err) {
-            res.status(400).json({code: 400, error: err});
+            res.status(400).json(err);
         }
     },
 
     decodeBits2Morse: (req, res) => {
         //verify param body
-        try {
-            validationResult(req).throw();
-        } catch (err) {
-            res.status(400).json({code: 400, error: err.mapped()});
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({errors: errors.mapped()});
         }
         //verify and translate
         try {
             const bits = req.body.text;
             const morse = MorseService.decodeBits2Morse(bits);
-            res.send({code: 200, response: morse});
+            res.status(200).json({code: 200, response: morse});
         } catch (err) {
-            res.status(400).json({code: 400, error: err});
+            res.status(400).json(err);
         }
     }
+
 }
 export default MorseController;
