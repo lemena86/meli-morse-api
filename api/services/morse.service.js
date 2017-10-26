@@ -90,6 +90,7 @@ const MorseService = {
                     count++;
                     j++;
                 }
+                //TODO: pensar como guardar tambien el medium zero
                 if (count < minZero) minZero = count;
                 if (count > maxZero) maxZero = count;
             }
@@ -120,6 +121,7 @@ const MorseService = {
                     count++;
                     j++;
                 }
+                //TODO: bug cuando el morse es de una sola palabra, pone la separacion doble
                 if (count === minZero) {
                 }
                 else if (count === maxZero) response = response.concat("  ");//letter separator

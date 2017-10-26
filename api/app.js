@@ -5,16 +5,15 @@ import morse from './routes/morse.routes'
 
 let app = express();
 app.use(cors());
+
+//set default content type application/json
 app.use(function (req, res, next) {
-    console.log(req.header('content-type'));
-    //req.headers['content-type'] = req.headers['content-type'] || 'application/json';
+    req.headers['content-type'] = 'application/json';
     next();
 });
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({extended: false}))
 
 // parse application/json
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 app.use('/translate', morse);
 

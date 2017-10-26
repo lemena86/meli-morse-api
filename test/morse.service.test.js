@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import _ from 'lodash';
 
-import MorseService from '../api/services/morse.services'
+import MorseService from '../api/services/morse.service'
 
 
 describe('Testing encodeMorse2Bits function', function () {
@@ -43,7 +43,7 @@ describe('Testing decodeBits2Morse function', function () {
         const bits = '000000100';
         assert.isString(MorseService.decodeBits2Morse(bits));
     });
-    it('Is ok with 10 tests cases', function () {
+    it('Is ok with 10 tests cases, more than one word', function () {
         let originalMorse = '- . ... -  - . -.-. -. .. -.-. ---  -- . .-.. ..';
         for (let i = 0; i < 10; i++) {
             let minOnes = _.random(1, 10);
@@ -52,6 +52,19 @@ describe('Testing decodeBits2Morse function', function () {
             let mediumZeros = _.random(minZeros, 20);
             let maxZeros = _.random(mediumZeros + 1, 30);
             let morse = "- . ... -  - . -.-. -. .. -.-. ---  -- . .-.. ..";
+            let inBits = MorseService.encodeMorse2Bits(morse, minOnes, maxOnes, minZeros, mediumZeros, maxZeros);
+            assert.strictEqual(MorseService.decodeBits2Morse(inBits), originalMorse);
+        }
+    });
+    it('Is ok with 10 tests cases, only one word', function () {
+        let originalMorse = '- . ... -';
+        for (let i = 0; i < 10; i++) {
+            let minOnes = _.random(1, 10);
+            let maxOnes = _.random(minOnes + 1, 20);
+            let minZeros = _.random(1, 10);
+            let mediumZeros = _.random(minZeros, 20);
+            let maxZeros = _.random(mediumZeros + 1, 30);
+            let morse = "- . ... -";
             let inBits = MorseService.encodeMorse2Bits(morse, minOnes, maxOnes, minZeros, mediumZeros, maxZeros);
             assert.strictEqual(MorseService.decodeBits2Morse(inBits), originalMorse);
         }
