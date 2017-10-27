@@ -8,7 +8,7 @@ if (!logger.log) {
         streams: [
             {
                 level: 'error',
-                path: path.join(__dirname, '/logs/error.log')
+                path: './logs/error.log'
             }
         ]
     });
