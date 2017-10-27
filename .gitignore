@@ -27,3 +27,6 @@ benchmarks/graphs
 
 # jetbrains
 .idea
+
+dist
+logs/error.log
