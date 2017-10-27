@@ -1,0 +1,1 @@
+{"name":"meli-morse-app","hostname":"NI-NTB-113.local","pid":53815,"level":50,"msg":"{\"type\":\"malformed_alphanumeric_string\",\"statusCode\":400,\"error\":{\"msg\":\"AlphaNumeric not valid\",\"character\":\".\"}}","time":"2017-10-27T01:55:05.017Z","v":0}
