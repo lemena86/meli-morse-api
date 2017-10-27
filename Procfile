@@ -1,1 +1,1 @@
-web: node dist/run.js --exec babel-node
+web: node ./dist/api/run.js
