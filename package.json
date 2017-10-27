@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon $NODE_DEBUG_OPTION bin/www --exec babel-node",
-    "build": "babel www -d dist",
-    "serve": "node bin/www",
+    "start": "nodemon $NODE_DEBUG_OPTION api/run.js --exec babel-node",
+    "build": "babel ./api/ --copy-files -d ./dist/api",
     "test": "mocha --compilers js:babel-register"
   },
   "author": "Luis Mena",

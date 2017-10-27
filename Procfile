@@ -1,1 +1,1 @@
-web: node bin/www --exec babel-node
+web: node dist/run.js --exec babel-node

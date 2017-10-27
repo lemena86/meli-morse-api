@@ -1,9 +1,7 @@
-#!/usr/bin/env node
-
 /**
  * Module dependencies.
  */
-import app from '../api/app';
+import app from './app';
 import http from 'http';
 
 /**
