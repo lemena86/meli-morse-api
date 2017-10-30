@@ -14,6 +14,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+var DOT = '.';
+var DASH = '-';
+var ONE_SPACE = ' ';
+var TWO_SPACES = '  ';
+var ZERO = '0';
+var ONE = '1';
 var MorseService = {
     /**
      * Given a string in morse code translates it into binary code (0,1), you must specify the amount of 1 for the points (.) and
@@ -44,27 +50,27 @@ var MorseService = {
         var response = "";
         var length = morse.length;
         for (var i = 0; i < length; i++) {
-            if (morse.charAt(i) === '.') {
+            if (morse.charAt(i) === DOT) {
                 //placing the 1
-                response = response.concat(_concat(minOnes, '1'));
+                response = response.concat(_concat(minOnes, ONE));
 
                 //placing space to separate characters
-                response = response.concat(_concat(minZeros, '0'));
-            } else if (morse.charAt(i) === '-') {
+                response = response.concat(_concat(minZeros, ZERO));
+            } else if (morse.charAt(i) === DASH) {
                 //placing the 1
-                response = response.concat(_concat(maxOnes, '1'));
+                response = response.concat(_concat(maxOnes, ONE));
 
                 //placing space to separate characters
-                response = response.concat(_concat(minZeros, '0'));
-            } else if (morse.charAt(i) === ' ') {
+                response = response.concat(_concat(minZeros, ZERO));
+            } else if (morse.charAt(i) === ONE_SPACE) {
                 //find the number of spaces to know if they are 1 or 2 spaces
-                if (morse.charAt(i + 1) === ' ') {
+                if (morse.charAt(i + 1) === ONE_SPACE) {
                     //is separation of words
                     i++;
-                    response = response.concat(_concat(maxZeros, '0'));
+                    response = response.concat(_concat(maxZeros, ZERO));
                 } else {
                     //letter separation
-                    response = response.concat(_concat(mediumZeros, '0'));
+                    response = response.concat(_concat(mediumZeros, ZERO));
                 }
             } else {
                 throw new _clientErrors.MalformedMorseStringError('Character not in morse', {
@@ -83,8 +89,8 @@ var MorseService = {
      */
     decodeBits2Morse: function decodeBits2Morse(bits) {
         //first and last ocurrence of 1
-        var start = bits.indexOf('1'),
-            end = bits.lastIndexOf('1') + 1;
+        var start = bits.indexOf(ONE),
+            end = bits.lastIndexOf(ONE) + 1;
         if (start === -1) throw new _clientErrors.MalformedBitsStringError('Bit 1 not found in string', { 'msg': 'Bit 1 not found in string' });
 
         //find count of consecutive characters
@@ -99,20 +105,24 @@ var MorseService = {
         };
 
         //search ocurrences of zeros and ones
-        var getCountResult = void 0;
+        var getCountResult = {};
         var setOnes = new Set();
         var setZeros = new Set();
+        var array = [];
+
         for (var i = start; i < end;) {
             //search ocurrence of 1
-            if (bits.charAt(i) === '1') {
+            if (bits.charAt(i) === ONE) {
                 getCountResult = _getCount(bits.charAt(i), i, end);
                 setOnes.add(getCountResult['count']);
+                array.push({ 'character': ONE, 'count': getCountResult['count'] });
                 i = getCountResult['j'];
             }
             //search ocurrence of 0
-            else if (bits.charAt(i) === '0') {
+            else if (bits.charAt(i) === ZERO) {
                     getCountResult = _getCount(bits.charAt(i), i, end);
                     setZeros.add(getCountResult['count']);
+                    array.push({ 'character': ZERO, 'count': getCountResult['count'] });
                     i = getCountResult['j'];
                 } else {
                     throw new _clientErrors.MalformedBitsStringError('Character not a bit', {
@@ -132,31 +142,42 @@ var MorseService = {
 
         //ones map with for the dots(.) and the dash(-)
         var mapOnes = new Map();
-        mapOnes.set(ones[0], '.');
-        if (ones[1]) mapOnes.set(ones[1], '-');
+        mapOnes.set(ones[0], DOT);
+        if (ones[1]) mapOnes.set(ones[1], DASH);
 
         //zeros map for spaces
         var mapZeros = new Map();
         if (zeros[0]) mapZeros.set(zeros[0], '');
-        if (zeros[1]) mapZeros.set(zeros[1], ' ');
-        if (zeros[2]) mapZeros.set(zeros[2], '  ');
+        if (zeros[1]) mapZeros.set(zeros[1], ONE_SPACE);
+        if (zeros[2]) mapZeros.set(zeros[2], TWO_SPACES);
 
-        //loop bits to find dot, dash, pause or long pause
+        //loop for array to create the response
         var response = '';
-        for (var _i = start; _i < end;) {
-            //search one
-            if (bits.charAt(_i) === '1') {
-                getCountResult = _getCount(bits.charAt(_i), _i, end);
-                _i = getCountResult['j'];
-                response = response.concat(mapOnes.get(getCountResult['count']));
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+            for (var _iterator = array[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var obj = _step.value;
+
+                if (obj['character'] === ONE) response = response.concat(mapOnes.get(obj['count']));else response = response.concat(mapZeros.get(obj['count']));
             }
-            //search zero
-            else {
-                    getCountResult = _getCount(bits.charAt(_i), _i, end);
-                    _i = getCountResult['j'];
-                    response = response.concat(mapZeros.get(getCountResult['count']));
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
                 }
+            } finally {
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
         }
+
         return response;
     },
     /**
@@ -173,18 +194,18 @@ var MorseService = {
             count = void 0,
             human = void 0;
         for (var i = 0; i < length;) {
-            if (morse.charAt(i) === ' ') {
+            if (morse.charAt(i) === ONE_SPACE) {
                 j = i;
                 count = 0;
-                while (j < length && morse.charAt(j) === ' ') {
+                while (j < length && morse.charAt(j) === ONE_SPACE) {
                     j++;
                     count++;
                 }
-                if (count > 1) response = response.concat(" ");
-            } else if (morse.charAt(i) === '.' || morse.charAt(i) === '-') {
+                if (count > 1) response = response.concat(ONE_SPACE);
+            } else if (morse.charAt(i) === DOT || morse.charAt(i) === DASH) {
                 letter = '';
                 j = i;
-                while (j < length && morse.charAt(j) !== ' ') {
+                while (j < length && morse.charAt(j) !== ONE_SPACE) {
                     letter = letter.concat(morse.charAt(j));
                     j++;
                 }
@@ -211,9 +232,9 @@ var MorseService = {
             j = void 0,
             morse = void 0;
         for (var i = 0; i < length;) {
-            if (human.charAt(i) === ' ') {
+            if (human.charAt(i) === ONE_SPACE) {
                 j = i;
-                while (j < length && human.charAt(j) === ' ') {
+                while (j < length && human.charAt(j) === ONE_SPACE) {
                     j++;
                 }i = j;
             } else {
@@ -221,7 +242,7 @@ var MorseService = {
                 if (!_lodash2.default.isUndefined(morse)) response = response.concat(morse);else throw new _clientErrors.MalformedAlphaNumericStringError('AlphaNumeric not valid', { 'msg': 'AlphaNumeric not valid', 'character': human.charAt(i) });
                 i++;
             }
-            if (i < length) response = response.concat(' ');
+            if (i < length) response = response.concat(ONE_SPACE);
         }
         return response;
     }
