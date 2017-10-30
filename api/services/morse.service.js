@@ -2,7 +2,8 @@ import _ from 'lodash';
 import {
     MalformedMorseStringError,
     MalformedBitsStringError,
-    MalformedAlphaNumericStringError
+    MalformedAlphaNumericStringError,
+    MorseToBitsValidationError
 } from '../errors/client-errors'
 
 const DOT = '.';
@@ -25,6 +26,23 @@ const MorseService = {
      * @return {string} string with the text in bits
      */
     encodeMorse2Bits: (morse, minOnes = 1, maxOnes = 2, minZeros = 1, mediumZeros = 1, maxZeros = 2) => {
+        //validation minOnes and maxOnes
+        if (minOnes >= maxOnes) {
+            throw new MorseToBitsValidationError('maxOnes must be greater than minOnes', {
+                'msg': 'maxOnes must be greater than minOnes',
+                'minOnes': minOnes,
+                'maxOnes': maxOnes
+            });
+        }
+        //validating minZeros, mediumZeros, maxZeros
+        if (minZeros > mediumZeros || minZeros >= maxZeros || mediumZeros >= maxZeros) {
+            throw new MorseToBitsValidationError('minZeros must be less or equal than mediumZeros, mediumZeros must be less than maxZeros', {
+                'msg': 'minZeros must be less or equal than mediumZeros, mediumZeros must be less than maxZeros',
+                'minZeros': minZeros,
+                'mediumZeros': mediumZeros,
+                'maxZeros': maxZeros
+            });
+        }
         let _concat = (count, character) => {
             let response = '';
             for (let i = 0; i < count; i++) {

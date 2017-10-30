@@ -37,6 +37,15 @@ class MalformedAlphaNumericStringError extends BadRequestError {
     }
 }
 
+class MorseToBitsValidationError extends BadRequestError {
+    constructor(message = 'Morse2Bits Validation Error', error = {}, type = 'morse2bits_validation_error') {
+        super(message);
+        this.type = type;
+        this.message = message;
+        this.error = error;
+    }
+}
+
 class NotFoundError extends ExtendableError {
     constructor(message = 'Not found', error = {}, type = 'not_found_error') {
         super(message);
@@ -51,5 +60,6 @@ module.exports = {
     NotFoundError,
     MalformedMorseStringError,
     MalformedBitsStringError,
-    MalformedAlphaNumericStringError
+    MalformedAlphaNumericStringError,
+    MorseToBitsValidationError
 };

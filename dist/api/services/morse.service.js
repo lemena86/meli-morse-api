@@ -40,6 +40,23 @@ var MorseService = {
         var mediumZeros = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
         var maxZeros = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 2;
 
+        //validation minOnes and maxOnes
+        if (minOnes >= maxOnes) {
+            throw new _clientErrors.MorseToBitsValidationError('maxOnes must be greater than minOnes', {
+                'msg': 'maxOnes must be greater than minOnes',
+                'minOnes': minOnes,
+                'maxOnes': maxOnes
+            });
+        }
+        //validating minZeros, mediumZeros, maxZeros
+        if (minZeros > mediumZeros || minZeros >= maxZeros || mediumZeros >= maxZeros) {
+            throw new _clientErrors.MorseToBitsValidationError('minZeros must be less or equal than mediumZeros, mediumZeros must be less than maxZeros', {
+                'msg': 'minZeros must be less or equal than mediumZeros, mediumZeros must be less than maxZeros',
+                'minZeros': minZeros,
+                'mediumZeros': mediumZeros,
+                'maxZeros': maxZeros
+            });
+        }
         var _concat = function _concat(count, character) {
             var response = '';
             for (var i = 0; i < count; i++) {

@@ -97,6 +97,27 @@ var MalformedAlphaNumericStringError = function (_BadRequestError3) {
     return MalformedAlphaNumericStringError;
 }(BadRequestError);
 
+var MorseToBitsValidationError = function (_BadRequestError4) {
+    _inherits(MorseToBitsValidationError, _BadRequestError4);
+
+    function MorseToBitsValidationError() {
+        var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Morse2Bits Validation Error';
+        var error = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'morse2bits_validation_error';
+
+        _classCallCheck(this, MorseToBitsValidationError);
+
+        var _this5 = _possibleConstructorReturn(this, (MorseToBitsValidationError.__proto__ || Object.getPrototypeOf(MorseToBitsValidationError)).call(this, message));
+
+        _this5.type = type;
+        _this5.message = message;
+        _this5.error = error;
+        return _this5;
+    }
+
+    return MorseToBitsValidationError;
+}(BadRequestError);
+
 var NotFoundError = function (_ExtendableError2) {
     _inherits(NotFoundError, _ExtendableError2);
 
@@ -107,13 +128,13 @@ var NotFoundError = function (_ExtendableError2) {
 
         _classCallCheck(this, NotFoundError);
 
-        var _this5 = _possibleConstructorReturn(this, (NotFoundError.__proto__ || Object.getPrototypeOf(NotFoundError)).call(this, message));
+        var _this6 = _possibleConstructorReturn(this, (NotFoundError.__proto__ || Object.getPrototypeOf(NotFoundError)).call(this, message));
 
-        _this5.type = type;
-        _this5.message = message;
-        _this5.statusCode = 404;
-        _this5.error = error;
-        return _this5;
+        _this6.type = type;
+        _this6.message = message;
+        _this6.statusCode = 404;
+        _this6.error = error;
+        return _this6;
     }
 
     return NotFoundError;
@@ -123,5 +144,6 @@ module.exports = {
     NotFoundError: NotFoundError,
     MalformedMorseStringError: MalformedMorseStringError,
     MalformedBitsStringError: MalformedBitsStringError,
-    MalformedAlphaNumericStringError: MalformedAlphaNumericStringError
+    MalformedAlphaNumericStringError: MalformedAlphaNumericStringError,
+    MorseToBitsValidationError: MorseToBitsValidationError
 };

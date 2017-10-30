@@ -3,7 +3,8 @@ import _ from 'lodash';
 import {
     MalformedMorseStringError,
     MalformedBitsStringError,
-    MalformedAlphaNumericStringError
+    MalformedAlphaNumericStringError,
+    MorseToBitsValidationError
 } from '../api/errors/client-errors'
 
 import MorseService from '../api/services/morse.service'
@@ -16,6 +17,25 @@ describe('Testing encodeMorse2Bits function', function () {
     it('Throws and error if have a character different from . or -', function () {
         const morse = '.-.-q.';
         assert.throws(() => MorseService.encodeMorse2Bits(morse), MalformedMorseStringError, 'Character not in morse');
+    });
+    it('Throws and error if minOnes is greater or equal than maxOnes', function () {
+        const morse = '.-.-.';
+        assert.throws(() => MorseService.encodeMorse2Bits(morse, 1, 1), MorseToBitsValidationError, 'maxOnes must be greater than minOnes');
+        assert.throws(() => MorseService.encodeMorse2Bits(morse, 3, 2), MorseToBitsValidationError, 'maxOnes must be greater than minOnes');
+    });
+    it('Throws and error if minZeros is greater than mediumZeros', function () {
+        const morse = '.-.-.';
+        assert.throws(() => MorseService.encodeMorse2Bits(morse, 1, 2, 3, 2, 4), MorseToBitsValidationError, 'minZeros must be less or equal than mediumZeros, mediumZeros must be less than maxZeros');
+    });
+    it('Throws and error if minZeros is greater or equal than mediumZeros', function () {
+        const morse = '.-.-.';
+        assert.throws(() => MorseService.encodeMorse2Bits(morse, 1, 2, 3, 3, 2), MorseToBitsValidationError, 'minZeros must be less or equal than mediumZeros, mediumZeros must be less than maxZeros');
+        assert.throws(() => MorseService.encodeMorse2Bits(morse, 1, 2, 3, 3, 3), MorseToBitsValidationError, 'minZeros must be less or equal than mediumZeros, mediumZeros must be less than maxZeros');
+    });
+    it('Throws and error if mediumZeros is greater or equal than maxZeros', function () {
+        const morse = '.-.-.';
+        assert.throws(() => MorseService.encodeMorse2Bits(morse, 1, 2, 3, 7, 6), MorseToBitsValidationError, 'minZeros must be less or equal than mediumZeros, mediumZeros must be less than maxZeros');
+        assert.throws(() => MorseService.encodeMorse2Bits(morse, 1, 2, 3, 5, 5), MorseToBitsValidationError, 'minZeros must be less or equal than mediumZeros, mediumZeros must be less than maxZeros');
     });
     it('Return an string', function () {
         const morse = '.-.-  - -.-.';
