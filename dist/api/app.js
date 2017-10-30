@@ -41,10 +41,15 @@ app.use(_bodyParser2.default.json());
 app.use('/translate', _morse2.default);
 
 // catch 404
-app.use(function (req, res) {
+app.use(function (req, res, next) {
     var err = new _clientErrors.NotFoundError();
-    _logger.log.error(JSON.stringify(err));
-    res.status(404).json(err);
+    next(err);
 });
 
+// error handler
+app.use(function (err, req, res, next) {
+    _logger.log.error(JSON.stringify(err));
+    // error message
+    res.status(err.status || err.statusCode || 500).json(err);
+});
 exports.default = app;

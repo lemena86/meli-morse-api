@@ -23,10 +23,15 @@ app.use('/translate', morse);
 
 
 // catch 404
-app.use((req, res,) => {
+app.use((req, res, next) => {
     let err = new NotFoundError();
-    log.error(JSON.stringify(err));
-    res.status(404).json(err);
+    next(err);
 });
 
+// error handler
+app.use((err, req, res, next) => {
+    log.error(JSON.stringify(err));
+    // error message
+    res.status(err.status || err.statusCode || 500).json(err);
+});
 export default app;
