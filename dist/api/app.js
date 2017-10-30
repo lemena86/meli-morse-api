@@ -22,6 +22,8 @@ var _morse = require('./routes/morse.routes');
 
 var _morse2 = _interopRequireDefault(_morse);
 
+var _clientErrors = require('./errors/client-errors');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var app = (0, _express2.default)();
@@ -38,22 +40,11 @@ app.use(_bodyParser2.default.json());
 
 app.use('/translate', _morse2.default);
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
-
-// error handler
-app.use(function (err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-
+// catch 404
+app.use(function (req, res) {
+    var err = new _clientErrors.NotFoundError();
     _logger.log.error(JSON.stringify(err));
-    // error message
-    res.status(err.status || 500).json(err);
+    res.status(404).json(err);
 });
 
 exports.default = app;

@@ -101,7 +101,7 @@ var NotFoundError = function (_ExtendableError2) {
     _inherits(NotFoundError, _ExtendableError2);
 
     function NotFoundError() {
-        var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Not found error';
+        var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Not found';
         var error = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         var type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'not_found_error';
 
@@ -120,7 +120,6 @@ var NotFoundError = function (_ExtendableError2) {
 }(_es6Error2.default);
 
 module.exports = {
-    BadRequestError: BadRequestError,
     NotFoundError: NotFoundError,
     MalformedMorseStringError: MalformedMorseStringError,
     MalformedBitsStringError: MalformedBitsStringError,

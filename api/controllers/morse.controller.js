@@ -5,13 +5,7 @@ import {log} from '../logger'
 const MorseController = {
 
     translate2Human: (req, res) => {
-        //verify param body
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            log.error(JSON.stringify(errors.mapped()));
-            return res.status(422).json({errors: errors.mapped()});
-        }
-        //verify and translate
+        //translate
         try {
             const morse = req.body.text;
             const human = MorseService.translate2Human(morse);
@@ -23,13 +17,7 @@ const MorseController = {
     },
 
     encode2Morse: (req, res) => {
-        //verify param body
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            log.error(JSON.stringify(errors.mapped()));
-            return res.status(422).json({errors: errors.mapped()});
-        }
-        //verify and translate
+        //translate
         try {
             const human = req.body.text;
             const morse = MorseService.encode2Morse(human);
@@ -41,13 +29,7 @@ const MorseController = {
     },
 
     encodeMorse2Bits: (req, res) => {
-        //verify param body
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            log.error(JSON.stringify(errors.mapped()));
-            return res.status(422).json({errors: errors.mapped()});
-        }
-        //verify and translate
+        //translate
         try {
             const morse = req.body.text;
             const minOnes = req.body.minOnes || 1;
@@ -64,13 +46,7 @@ const MorseController = {
     },
 
     decodeBits2Morse: (req, res) => {
-        //verify param body
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            log.error(JSON.stringify(errors.mapped()));
-            return res.status(422).json({errors: errors.mapped()});
-        }
-        //verify and translate
+        //translate
         try {
             const bits = req.body.text;
             const morse = MorseService.decodeBits2Morse(bits);

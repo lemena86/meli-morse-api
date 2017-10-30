@@ -17,13 +17,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var MorseController = {
 
     translate2Human: function translate2Human(req, res) {
-        //verify param body
-        var errors = (0, _check.validationResult)(req);
-        if (!errors.isEmpty()) {
-            _logger.log.error(JSON.stringify(errors.mapped()));
-            return res.status(422).json({ errors: errors.mapped() });
-        }
-        //verify and translate
+        //translate
         try {
             var morse = req.body.text;
             var human = _morse2.default.translate2Human(morse);
@@ -35,13 +29,7 @@ var MorseController = {
     },
 
     encode2Morse: function encode2Morse(req, res) {
-        //verify param body
-        var errors = (0, _check.validationResult)(req);
-        if (!errors.isEmpty()) {
-            _logger.log.error(JSON.stringify(errors.mapped()));
-            return res.status(422).json({ errors: errors.mapped() });
-        }
-        //verify and translate
+        //translate
         try {
             var human = req.body.text;
             var morse = _morse2.default.encode2Morse(human);
@@ -53,13 +41,7 @@ var MorseController = {
     },
 
     encodeMorse2Bits: function encodeMorse2Bits(req, res) {
-        //verify param body
-        var errors = (0, _check.validationResult)(req);
-        if (!errors.isEmpty()) {
-            _logger.log.error(JSON.stringify(errors.mapped()));
-            return res.status(422).json({ errors: errors.mapped() });
-        }
-        //verify and translate
+        //translate
         try {
             var morse = req.body.text;
             var minOnes = req.body.minOnes || 1;
@@ -76,13 +58,7 @@ var MorseController = {
     },
 
     decodeBits2Morse: function decodeBits2Morse(req, res) {
-        //verify param body
-        var errors = (0, _check.validationResult)(req);
-        if (!errors.isEmpty()) {
-            _logger.log.error(JSON.stringify(errors.mapped()));
-            return res.status(422).json({ errors: errors.mapped() });
-        }
-        //verify and translate
+        //translate
         try {
             var bits = req.body.text;
             var morse = _morse2.default.decodeBits2Morse(bits);

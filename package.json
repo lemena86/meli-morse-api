@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon $NODE_DEBUG_OPTION api/run.js --exec babel-node",
+    "start": "nodemon api/run.js --exec babel-node",
     "build": "babel ./api/ --copy-files -d ./dist/api",
-    "test": "mocha --compilers js:babel-register"
+    "test": "nyc --reporter=html  mocha --compilers js:babel-register",
+    "coverage": "nyc --reporter=text mocha ./test --recursive --compilers js:babel-register"
   },
   "author": "Luis Mena",
   "license": "ISC",
@@ -27,6 +28,7 @@
     "babel-register": "^6.26.0",
     "mocha": "^4.0.1",
     "nodemon": "^1.12.1",
+    "nyc": "^11.2.1",
     "supertest": "^3.0.0"
   }
 }

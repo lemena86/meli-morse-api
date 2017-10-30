@@ -1,6 +1,7 @@
 import {Router} from 'express';
-import {body} from 'express-validator/check';
+import {body, validationResult} from 'express-validator/check';
 import MorseController from '../controllers/morse.controller'
+import {log} from '../logger'
 
 let router = Router();
 
@@ -11,7 +12,13 @@ router.post('/2text',
         .exists()
         .withMessage(`Param text is not present. Example is curl -X POST "http://localhost:3000/translate/2text" -d '{"text": "...."}'`),
     (req, res) => {
-        MorseController.translate2Human(req, res);
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            log.error(JSON.stringify(errors.mapped()));
+            res.status(422).json({errors: errors.mapped()});
+        } else {
+            MorseController.translate2Human(req, res);
+        }
     });
 
 //curl -X POST "http://localhost:3000/translate/2morse" -d '{"text": "HOLA MELI"}'
@@ -21,7 +28,13 @@ router.post('/2morse',
         .exists()
         .withMessage(`Param text is not present. Example is curl -X POST "http://server:port/translate/2morse" -d '{"text": "HOLA MELI"}'`),
     (req, res) => {
-        MorseController.encode2Morse(req, res);
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            log.error(JSON.stringify(errors.mapped()));
+            res.status(422).json({errors: errors.mapped()});
+        } else {
+            MorseController.encode2Morse(req, res);
+        }
     });
 
 //curl -X POST "http://localhost:3000/translate/2bits" -d '{"text": ".... --- .-.. .-  -- . .-.. .."}'
@@ -32,7 +45,13 @@ router.post('/2bits',
         .exists()
         .withMessage(`Param text is not present. Example is curl -X POST "http://server:port/translate/2bits" -d '{"text": ".... --- .-.. .-  -- . .-.. .."}'`),
     (req, res) => {
-        MorseController.encodeMorse2Bits(req, res);
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            log.error(JSON.stringify(errors.mapped()));
+            res.status(422).json({errors: errors.mapped()});
+        } else {
+            MorseController.encodeMorse2Bits(req, res);
+        }
     });
 
 //curl -X POST "http://localhost:3000/translate/bits2morse" -d '{"text": "101010100110110110010110101001011000110110010010110101001010"}'
@@ -42,7 +61,13 @@ router.post('/bits2morse',
         .exists()
         .withMessage(`Param text is not present. Example is curl -X POST "http://server:port/translate/bits2morse" -d '{"text": "10101101"}'`),
     (req, res) => {
-        MorseController.decodeBits2Morse(req, res);
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            log.error(JSON.stringify(errors.mapped()));
+            res.status(422).json({errors: errors.mapped()});
+        } else {
+            MorseController.decodeBits2Morse(req, res);
+        }
     });
 
 export default router;

@@ -38,7 +38,7 @@ class MalformedAlphaNumericStringError extends BadRequestError {
 }
 
 class NotFoundError extends ExtendableError {
-    constructor(message = 'Not found error', error = {}, type = 'not_found_error') {
+    constructor(message = 'Not found', error = {}, type = 'not_found_error') {
         super(message);
         this.type = type;
         this.message = message;
@@ -48,7 +48,6 @@ class NotFoundError extends ExtendableError {
 }
 
 module.exports = {
-    BadRequestError,
     NotFoundError,
     MalformedMorseStringError,
     MalformedBitsStringError,
