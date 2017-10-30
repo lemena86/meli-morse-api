@@ -9,6 +9,8 @@ const DOT = '.';
 const DASH = '-';
 const ONE_SPACE = ' ';
 const TWO_SPACES = '  ';
+const ZERO = '0';
+const ONE = '1';
 const MorseService = {
     /**
      * Given a string in morse code translates it into binary code (0,1), you must specify the amount of 1 for the points (.) and
@@ -35,27 +37,27 @@ const MorseService = {
         for (let i = 0; i < length; i++) {
             if (morse.charAt(i) === DOT) {
                 //placing the 1
-                response = response.concat(_concat(minOnes, '1'));
+                response = response.concat(_concat(minOnes, ONE));
 
                 //placing space to separate characters
-                response = response.concat(_concat(minZeros, '0'));
+                response = response.concat(_concat(minZeros, ZERO));
             }
             else if (morse.charAt(i) === DASH) {
                 //placing the 1
-                response = response.concat(_concat(maxOnes, '1'));
+                response = response.concat(_concat(maxOnes, ONE));
 
                 //placing space to separate characters
-                response = response.concat(_concat(minZeros, '0'));
+                response = response.concat(_concat(minZeros, ZERO));
             }
             else if (morse.charAt(i) === ONE_SPACE) {
                 //find the number of spaces to know if they are 1 or 2 spaces
                 if (morse.charAt(i + 1) === ONE_SPACE) {
                     //is separation of words
                     i++;
-                    response = response.concat(_concat(maxZeros, '0'));
+                    response = response.concat(_concat(maxZeros, ZERO));
                 } else {
                     //letter separation
-                    response = response.concat(_concat(mediumZeros, '0'));
+                    response = response.concat(_concat(mediumZeros, ZERO));
                 }
             }
             else {
@@ -75,7 +77,7 @@ const MorseService = {
      */
     decodeBits2Morse: (bits) => {
         //first and last ocurrence of 1
-        let start = bits.indexOf('1'), end = bits.lastIndexOf('1') + 1;
+        let start = bits.indexOf(ONE), end = bits.lastIndexOf(ONE) + 1;
         if (start === -1) throw new MalformedBitsStringError('Bit 1 not found in string', {'msg': 'Bit 1 not found in string'});
 
         //find count of consecutive characters
@@ -89,20 +91,24 @@ const MorseService = {
         }
 
         //search ocurrences of zeros and ones
-        let getCountResult;
+        let getCountResult = {};
         let setOnes = new Set();
         let setZeros = new Set();
+        let array = [];
+
         for (let i = start; i < end;) {
             //search ocurrence of 1
-            if (bits.charAt(i) === '1') {
+            if (bits.charAt(i) === ONE) {
                 getCountResult = _getCount(bits.charAt(i), i, end);
                 setOnes.add(getCountResult['count']);
+                array.push({'character': ONE, 'count': getCountResult['count']});
                 i = getCountResult['j'];
             }
             //search ocurrence of 0
-            else if (bits.charAt(i) === '0') {
+            else if (bits.charAt(i) === ZERO) {
                 getCountResult = _getCount(bits.charAt(i), i, end);
                 setZeros.add(getCountResult['count']);
+                array.push({'character': ZERO, 'count': getCountResult['count']});
                 i = getCountResult['j'];
             }
             else {
@@ -137,22 +143,15 @@ const MorseService = {
         if (zeros[1]) mapZeros.set(zeros[1], ONE_SPACE);
         if (zeros[2]) mapZeros.set(zeros[2], TWO_SPACES);
 
-        //loop bits to find dot, dash, pause or long pause
+        //loop for array to create the response
         let response = '';
-        for (let i = start; i < end;) {
-            //search one
-            if (bits.charAt(i) === '1') {
-                getCountResult = _getCount(bits.charAt(i), i, end);
-                i = getCountResult['j'];
-                response = response.concat(mapOnes.get(getCountResult['count']));
-            }
-            //search zero
-            else {
-                getCountResult = _getCount(bits.charAt(i), i, end);
-                i = getCountResult['j'];
-                response = response.concat(mapZeros.get(getCountResult['count']));
-            }
+        for (const obj of array) {
+            if (obj['character'] === ONE)
+                response = response.concat(mapOnes.get(obj['count']))
+            else
+                response = response.concat(mapZeros.get(obj['count']))
         }
+
         return response;
     },
     /**
