@@ -5,6 +5,10 @@ import {
     MalformedAlphaNumericStringError
 } from '../errors/client-errors'
 
+const DOT = '.';
+const DASH = '-';
+const ONE_SPACE = ' ';
+const TWO_SPACES = '  ';
 const MorseService = {
     /**
      * Given a string in morse code translates it into binary code (0,1), you must specify the amount of 1 for the points (.) and
@@ -29,23 +33,23 @@ const MorseService = {
         let response = "";
         let length = morse.length;
         for (let i = 0; i < length; i++) {
-            if (morse.charAt(i) === '.') {
+            if (morse.charAt(i) === DOT) {
                 //placing the 1
                 response = response.concat(_concat(minOnes, '1'));
 
                 //placing space to separate characters
                 response = response.concat(_concat(minZeros, '0'));
             }
-            else if (morse.charAt(i) === '-') {
+            else if (morse.charAt(i) === DASH) {
                 //placing the 1
                 response = response.concat(_concat(maxOnes, '1'));
 
                 //placing space to separate characters
                 response = response.concat(_concat(minZeros, '0'));
             }
-            else if (morse.charAt(i) === ' ') {
+            else if (morse.charAt(i) === ONE_SPACE) {
                 //find the number of spaces to know if they are 1 or 2 spaces
-                if (morse.charAt(i + 1) === ' ') {
+                if (morse.charAt(i + 1) === ONE_SPACE) {
                     //is separation of words
                     i++;
                     response = response.concat(_concat(maxZeros, '0'));
@@ -124,14 +128,14 @@ const MorseService = {
 
         //ones map with for the dots(.) and the dash(-)
         let mapOnes = new Map();
-        mapOnes.set(ones[0], '.');
-        if (ones[1]) mapOnes.set(ones[1], '-');
+        mapOnes.set(ones[0], DOT);
+        if (ones[1]) mapOnes.set(ones[1], DASH);
 
         //zeros map for spaces
         let mapZeros = new Map();
         if (zeros[0]) mapZeros.set(zeros[0], '');
-        if (zeros[1]) mapZeros.set(zeros[1], ' ');
-        if (zeros[2]) mapZeros.set(zeros[2], '  ');
+        if (zeros[1]) mapZeros.set(zeros[1], ONE_SPACE);
+        if (zeros[2]) mapZeros.set(zeros[2], TWO_SPACES);
 
         //loop bits to find dot, dash, pause or long pause
         let response = '';
@@ -160,18 +164,18 @@ const MorseService = {
     translate2Human: (morse) => {
         let response = '', letter, length = morse.length, j, count, human;
         for (let i = 0; i < length;) {
-            if (morse.charAt(i) === ' ') {
+            if (morse.charAt(i) === ONE_SPACE) {
                 j = i;
                 count = 0;
-                while (j < length && morse.charAt(j) === ' ') {
+                while (j < length && morse.charAt(j) === ONE_SPACE) {
                     j++;
                     count++;
                 }
-                if (count > 1) response = response.concat(" ");
-            } else if (morse.charAt(i) === '.' || morse.charAt(i) === '-') {
+                if (count > 1) response = response.concat(ONE_SPACE);
+            } else if (morse.charAt(i) === DOT || morse.charAt(i) === DASH) {
                 letter = '';
                 j = i;
-                while (j < length && morse.charAt(j) !== ' ') {
+                while (j < length && morse.charAt(j) !== ONE_SPACE) {
                     letter = letter.concat(morse.charAt(j));
                     j++;
                 }
@@ -200,9 +204,9 @@ const MorseService = {
         human = human.toUpperCase();
         let response = '', length = human.length, j, morse;
         for (let i = 0; i < length;) {
-            if (human.charAt(i) === ' ') {
+            if (human.charAt(i) === ONE_SPACE) {
                 j = i;
-                while (j < length && human.charAt(j) === ' ') j++;
+                while (j < length && human.charAt(j) === ONE_SPACE) j++;
                 i = j;
             } else {
                 morse = alphaMap.get(human.charAt(i));
@@ -213,7 +217,7 @@ const MorseService = {
                 i++;
             }
             if (i < length)
-                response = response.concat(' ');
+                response = response.concat(ONE_SPACE);
         }
         return response;
     }
