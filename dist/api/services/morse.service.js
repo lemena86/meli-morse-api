@@ -80,14 +80,16 @@ var MorseService = {
                 //placing space to separate characters
                 response = response.concat(_concat(minZeros, ZERO));
             } else if (morse.charAt(i) === ONE_SPACE) {
-                //find the number of spaces to know if they are 1 or 2 spaces
-                if (morse.charAt(i + 1) === ONE_SPACE) {
-                    //is separation of words
-                    i++;
-                    response = response.concat(_concat(maxZeros, ZERO));
-                } else {
-                    //letter separation
-                    response = response.concat(_concat(mediumZeros, ZERO));
+                if (i + 1 < length) {
+                    //find the number of spaces to know if they are 1 or 2 spaces
+                    if (morse.charAt(i + 1) === ONE_SPACE) {
+                        //is separation of words
+                        i++;
+                        response = response.concat(_concat(maxZeros, ZERO));
+                    } else {
+                        //letter separation
+                        response = response.concat(_concat(mediumZeros, ZERO));
+                    }
                 }
             } else {
                 throw new _clientErrors.MalformedMorseStringError('Character not in morse', {
@@ -104,7 +106,7 @@ var MorseService = {
      * @param bits string in bits
      * @returns {string} morse decoded string
      */
-    decodeBits2Morse: function decodeBits2Morse(bits) {
+    decodeBits2MorseMoreComplexity: function decodeBits2MorseMoreComplexity(bits) {
         //first and last ocurrence of 1
         var start = bits.indexOf(ONE),
             end = bits.lastIndexOf(ONE) + 1;
@@ -191,6 +193,139 @@ var MorseService = {
             } finally {
                 if (_didIteratorError) {
                     throw _iteratorError;
+                }
+            }
+        }
+
+        return response;
+    },
+
+    decodeBits2Morse: function decodeBits2Morse(bits) {
+        //first and last ocurrence of 1
+        var start = bits.indexOf(ONE),
+            end = bits.lastIndexOf(ONE) + 1;
+        if (start === -1) throw new _clientErrors.MalformedBitsStringError('Bit 1 not found in string', { 'msg': 'Bit 1 not found in string' });
+
+        //find count of consecutive characters
+        var _getCount = function _getCount(character, start, end) {
+            var j = start,
+                count = 0;
+            while (j < end && bits.charAt(j) === character) {
+                count++;
+                j++;
+            }
+            return { 'count': count, 'j': j };
+        };
+
+        //search ocurrences of zeros and ones
+        var getCountResult = {};
+        var array = [];
+        var minOne = Number.MAX_VALUE,
+            maxOne = Number.MIN_VALUE,
+            minZero = Number.MAX_VALUE,
+            medZero = Number.MAX_VALUE,
+            maxZero = Number.MIN_VALUE,
+            changesOne = 0,
+            changesZeros = 0,
+            count = void 0;
+        for (var i = start; i < end;) {
+            getCountResult = _getCount(bits.charAt(i), i, end);
+            count = getCountResult['count'];
+            //search ocurrence of 1
+            if (bits.charAt(i) === ONE) {
+                if (count <= minOne) {
+                    //update minOne if is greater than count
+                    if (count < minOne) {
+                        if (minOne !== Number.MAX_VALUE) maxOne = minOne;
+                        minOne = count;
+                        changesOne++;
+                    }
+                } else if (count >= maxOne) {
+                    //only update maxOne if is less than count
+                    if (count > maxOne) {
+                        maxOne = count;
+                        changesOne++;
+                    }
+                } else {
+                    throw new _clientErrors.MalformedBitsStringError('More than two ones in a row in the string (e.g 10110111)', { 'msg': 'More than two ones in a row in the string (e.g 10110111)' });
+                }
+                i = getCountResult['j'];
+                array.push({ 'character': ONE, 'count': count });
+            }
+            //search ocurrence of 0
+            else if (bits.charAt(i) === ZERO) {
+                    if (count <= minZero) {
+                        //update minZero if is greater than count
+                        if (count < minZero) {
+                            //if (medZero !== Number.MAX_VALUE) maxZero = medZero;
+                            if (minZero !== Number.MAX_VALUE) medZero = minZero;
+                            minZero = count;
+                            changesZeros++;
+                        }
+                    } else if (count <= medZero) {
+                        //update medZero if is greater than count
+                        if (count < medZero) {
+                            //if (medZero !== Number.MAX_VALUE) maxZero = medZero;
+                            medZero = count;
+                            changesZeros++;
+                        }
+                    } else if (count >= maxZero) {
+                        //update maxZero if is less than count
+                        if (count > maxZero) {
+                            maxZero = count;
+                            changesZeros++;
+                        }
+                    } else {
+                        throw new _clientErrors.MalformedBitsStringError('More than three zeros in a row in the string (e.g 10110010001000010)', { 'msg': 'More than three zeros in a row in the string (e.g 10110010001000010)' });
+                    }
+                    i = getCountResult['j']; //i
+                    array.push({ 'character': ZERO, 'count': count });
+                } else {
+                    throw new _clientErrors.MalformedBitsStringError('Character not a bit', {
+                        'msg': 'Character not a bit',
+                        'character': bits.charAt(i)
+                    });
+                }
+        }
+        //verify sets
+        if (changesOne > 2) throw new _clientErrors.MalformedBitsStringError('More than two ones in a row in the string (e.g 10110111)', { 'msg': 'More than two ones in a row in the string (e.g 10110111)' });
+        //para los zeros el maximo es 3
+        if (changesZeros > 3) throw new _clientErrors.MalformedBitsStringError('More than three zeros in a row in the string (e.g 10110010001000010)', { 'msg': 'More than three zeros in a row in the string (e.g 10110010001000010)' });
+
+        //ones map with for the dots(.) and the dash(-)
+        var mapOnes = new Map();
+        mapOnes.set(minOne, DOT);
+        mapOnes.set(maxOne, DASH);
+
+        //zeros map for spaces
+        var mapZeros = new Map();
+        mapZeros.set(minZero, '');
+        mapZeros.set(medZero, ONE_SPACE);
+        mapZeros.set(maxZero, TWO_SPACES);
+
+        //loop for array to create the response
+        var response = '';
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+            for (var _iterator2 = array[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                var obj = _step2.value;
+
+                if (obj['character'] === ONE) response = response.concat(mapOnes.get(obj['count']));else response = response.concat(mapZeros.get(obj['count']));
+            }
+        } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                    _iterator2.return();
+                }
+            } finally {
+                if (_didIteratorError2) {
+                    throw _iteratorError2;
                 }
             }
         }

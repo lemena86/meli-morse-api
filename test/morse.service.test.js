@@ -49,6 +49,62 @@ describe('Testing encodeMorse2Bits function', function () {
         //second case
         const result1 = '1111111100111110011111011111011111001111111100000011111111001111100111111110111110111111110111110011111111011111001111101111100111111110111110111111110111110011111111011111111011111111000000111111110111111110011111001111101111111101111101111100111110111110';
         assert.strictEqual(MorseService.encodeMorse2Bits(morse, 5, 8, 1, 1, 5), result1);
+        //third case
+        const morse1 = '- . ... -  - . -.-. -. .. -.-. ---  -- . .-.. .. ';
+        const result2 = '110000001000000100010001000000110000000110000001000000110001000110001000000110001000000100010000001100010001100010000001100011000110000000110001100000010000001000110001000100000010001000';
+        assert.strictEqual(MorseService.encodeMorse2Bits(morse1, 1, 2, 3, 3, 4), result2);
+    });
+});
+
+describe('Testing decodeBits2MorseMoreComplexity function', function () {
+    it('encodeMorse2Bits is a function', function () {
+        assert.isFunction(MorseService.decodeBits2MorseMoreComplexity);
+    });
+    it('Throws and error if not found any ocurrence of 1', function () {
+        const bits = '000000000';
+        assert.throws(() => MorseService.decodeBits2MorseMoreComplexity(bits), MalformedBitsStringError, 'Bit 1 not found in string');
+    });
+    it('Throws and error if have a character different from 0 or 1', function () {
+        const bits = '010000c0010';
+        assert.throws(() => MorseService.decodeBits2MorseMoreComplexity(bits), MalformedBitsStringError, 'Character not a bit');
+    });
+    it('Throws and error if have more than two ones in a row', function () {
+        const bits = '10110111';
+        assert.throws(() => MorseService.decodeBits2MorseMoreComplexity(bits), MalformedBitsStringError, 'More than two ones in a row in the string (e.g 10110111)');
+    });
+    it('Throws and error if have more than three zeros in a row', function () {
+        const bits = '10110011000100001';
+        assert.throws(() => MorseService.decodeBits2MorseMoreComplexity(bits), MalformedBitsStringError, 'More than three zeros in a row in the string (e.g 10110010001000010)');
+    });
+    it('Return an string', function () {
+        const bits = '000000100';
+        assert.isString(MorseService.decodeBits2MorseMoreComplexity(bits));
+    });
+    it('Is ok with 1000 tests cases, more than one word', function () {
+        let originalMorse = '- . ... -  - . -.-. -. .. -.-. ---  -- . .-.. ..';
+        for (let i = 0; i < 1000; i++) {
+            let minOnes = _.random(1, 10);
+            let maxOnes = _.random(minOnes + 1, 20);
+            let minZeros = _.random(1, 10);
+            let mediumZeros = _.random(minZeros, 20);
+            let maxZeros = _.random(mediumZeros + 1, 30);
+            let morse = "- . ... -  - . -.-. -. .. -.-. ---  -- . .-.. ..";
+            let inBits = MorseService.encodeMorse2Bits(morse, minOnes, maxOnes, minZeros, mediumZeros, maxZeros);
+            assert.strictEqual(MorseService.decodeBits2MorseMoreComplexity(inBits), originalMorse);
+        }
+    });
+    it('Is ok with 1000 tests cases, only one word', function () {
+        let originalMorse = '- . ... -';
+        for (let i = 0; i < 1000; i++) {
+            let minOnes = _.random(1, 10);
+            let maxOnes = _.random(minOnes + 1, 20);
+            let minZeros = _.random(1, 10);
+            let mediumZeros = _.random(minZeros, 20);
+            let maxZeros = _.random(mediumZeros + 1, 30);
+            let morse = "- . ... -";
+            let inBits = MorseService.encodeMorse2Bits(morse, minOnes, maxOnes, minZeros, mediumZeros, maxZeros);
+            assert.strictEqual(MorseService.decodeBits2MorseMoreComplexity(inBits), originalMorse);
+        }
     });
 });
 
@@ -67,14 +123,25 @@ describe('Testing decodeBits2Morse function', function () {
     it('Throws and error if have more than two ones in a row', function () {
         const bits = '10110111';
         assert.throws(() => MorseService.decodeBits2Morse(bits), MalformedBitsStringError, 'More than two ones in a row in the string (e.g 10110111)');
+        const bits1 = '1011101101'
+        assert.throws(() => MorseService.decodeBits2Morse(bits1), MalformedBitsStringError, 'More than two ones in a row in the string (e.g 10110111)');
+
     });
     it('Throws and error if have more than three zeros in a row', function () {
         const bits = '10110011000100001';
         assert.throws(() => MorseService.decodeBits2Morse(bits), MalformedBitsStringError, 'More than three zeros in a row in the string (e.g 10110010001000010)');
+        const bits1 = '101100110001000001100001';
+        assert.throws(() => MorseService.decodeBits2Morse(bits1), MalformedBitsStringError, 'More than three zeros in a row in the string (e.g 10110010001000010)');
     });
     it('Return an string', function () {
         const bits = '000000100';
         assert.isString(MorseService.decodeBits2Morse(bits));
+    });
+    it('Is ok with 1000 tests cases, with differents values', function () {
+        const morse = '.. .  .'
+        let inBits = '1010010001';
+        assert.strictEqual(MorseService.decodeBits2Morse(inBits), morse);
+
     });
     it('Is ok with 1000 tests cases, more than one word', function () {
         let originalMorse = '- . ... -  - . -.-. -. .. -.-. ---  -- . .-.. ..';
